@@ -12,22 +12,54 @@
 //Declaring a static variable so that it Stays off of stack.
 //For the purpose of this project I am attempting to declare a massive array
 //Which actually overload the stack and causes a segmentation fault upon declaration
-static int array[10000][10000];
+static int arrLength = 1000000;
+static int array[1000000];
+static unsigned long arr[1000000];
 
 
 int main(){
-	//long double array[100000][100000];
 
-    struct timeval start, end;
-	unsigned long res;
-	int x;
+    struct timespec start, end;
+	unsigned long res = 0, maxval, temp;
+	int x, max = 0, y=0;
+	/*  Used as a way to change distance between each reference
+	    for different experiments. All tests done now have been in powers of 
+	    10 (1, 10, 100, etc.), but we may want to do a little math with the
+	    size of an int so we move in byte amounts that are a power of 2 */
+	int interval = 1;
 
-	for(int i = 0; i<10000; i += 99){
-        gettimeofday(&start,NULL);
-		x = array[i][i];
-		gettimeofday(&end,NULL);
-		res = end.tv_usec - start.tv_usec;
-		//printf("Times: %f, %f", (float)start, (float)end);
-		printf("Take %d: %lu\n", i, res);
+    //Go through the loop and meaure the time it takes for variable x to be assigned a value
+    //from a position in an array. Sets the difference to a temp variable that is placed in arr[]
+    //which serves as an array of the time values taken on each reference and used for other 
+    //calculations such as mode.
+	for(int i = 0; i<arrLength; i += interval){
+        timespec_get(&start,TIME_UTC);
+		x = array[i];
+		timespec_get(&end,TIME_UTC);
+        temp = end.tv_nsec - start.tv_nsec;
+		arr[i] = temp;
+		res += temp;
+		y++;
 	}
+	float avg = (float)res / y;
+	printf("Average: %f\n", avg);
+   
+    //Calculate the mode of the time values
+	for(int i=0;i<arrLength; i+=interval){
+		int count = 0;
+
+		for(int j = 0; j < arrLength; j+= interval){
+			if(arr[j] == arr[i]){
+				++count;
+			}
+		}
+		if(count > max){
+			max = count;
+			maxval = arr[i];
+		}
+
+	}
+
+	printf("Mode: %lu\n", maxval);
+
 }
