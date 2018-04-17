@@ -12,12 +12,12 @@
 //Declaring a static variable so that it Stays off of stack.
 //For the purpose of this project I am attempting to declare a massive array
 //Which actually overload the stack and causes a segmentation fault upon declaration
-static int arrLength = 1000000;
+static double arrLength = 1000000;
 static int array[1000000];
 static unsigned long arr[1000000];
 
 
-int main(){
+int main(int argc, char** argv){
 
     struct timespec start, end;
 	unsigned long res = 0, maxval, temp;
@@ -32,11 +32,13 @@ int main(){
     //from a position in an array. Sets the difference to a temp variable that is placed in arr[]
     //which serves as an array of the time values taken on each reference and used for other 
     //calculations such as mode.
+    printf("%lf\n", TIME_UTC);
 	for(int i = 0; i<arrLength; i += interval){
         timespec_get(&start,TIME_UTC);
 		x = array[i];
 		timespec_get(&end,TIME_UTC);
         temp = end.tv_nsec - start.tv_nsec;
+        printf("%lf\n", temp);
 		arr[i] = temp;
 		res += temp;
 		y++;
@@ -47,6 +49,7 @@ int main(){
     //Calculate the mode of the time values
 	for(int i=0;i<arrLength; i+=interval){
 		int count = 0;
+		// printf("%d\n", i);
 
 		for(int j = 0; j < arrLength; j+= interval){
 			if(arr[j] == arr[i]){
