@@ -14,3 +14,6 @@ Both makefile and modularity will be editted at later times.
 #Update 3: 
 Some modularity added w/ mode function, program now takes command line arguments to specify # tests, #runs per test and interval size, and timing is now done
 on the entire loop as opposed to the single data access. This loop itself is now placed in a loop that runs for the number of tests
+
+#Update 4: 
+Median Function added, as well after some empirical testing, results have been pretty consistent with all results being consistent per jump interval size until it reaches 32768 bytes (32k), which leads me to believe that the block sizes seem to be around 32k. Furthermore, cache accesses take an average of 3000-4000 ms and main memory accesses around 10500 ms, which is a >50% increase in access time. More accurate stats can be performed later 

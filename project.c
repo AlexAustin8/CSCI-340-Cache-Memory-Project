@@ -12,10 +12,10 @@
 
 
 
-static double arrLength = 1000000;
-static char array[1000000];         //Switched from int to char array due to S I N G L E - B Y T E N E S S
-static int arr[1000000];
-int interval, numRuns, numTests;
+static double arrLength = 100000000;
+static char array[100000000];         //Switched from int to char array due to S I N G L E - B Y T E N E S S
+static int arr[100000000];
+int interval, numRuns, numTests, k;
 
 
 
@@ -41,6 +41,26 @@ int findMode(){
 }
 
 
+//Simple comparator function for sorting purposes, functions akin to Java compareTo()
+int comparator(const void* x, const void* y){
+	return ( *(int*)x - *(int*)y);
+}
+
+
+
+//Find Median value of results by sorting list returns the mean of 2 middle elements
+//if there is an even number of elements, else returns middle element
+int findMedian(){
+	qsort((void*)arr, k, sizeof(arr[0]), comparator);
+	
+   
+	if(k%2 == 0){
+		return((arr[k/2] + arr[k/2 -1]) / 2.0);
+	}else{
+		return arr[k/2];
+	}
+
+}
 
 
 
@@ -64,7 +84,7 @@ int main(int argc, char** argv){
     /*Runs the number of tests specified by user, where 
       each test times a loop of user specified number of runs with a specified interval
       between each index into the array */
-    for(int k = 0; k<numTests; ++k){
+    for(k = 0; k<numTests; ++k){
 	    y = 0;
 	    timespec_get(&start,TIME_UTC);
 		for(int i = 0; y<numRuns; i += interval){
@@ -82,7 +102,11 @@ int main(int argc, char** argv){
 	float avg = (float)res / y;
     int mode = findMode();
 
+    int median = findMedian();
+
 	printf("Average: %f\n", avg);
     printf("Mode: %d\n", mode);
+    printf("Median: %d\n", median);
+
 
 }
