@@ -4,54 +4,30 @@
 #include <sys/time.h>
 
 
-/* This is a base from which
-   our empirical procedures will grow
-   */
+/* When run from the command line, this requires three parameters: first being the interval
+  between each index, the second being the number of runs to do for each test, and the third 
+  being the number of tests to do.
+
+ */
 
 
-//Declaring a static variable so that it Stays off of stack.
-//For the purpose of this project I am attempting to declare a massive array
-//Which actually overload the stack and causes a segmentation fault upon declaration
+
 static double arrLength = 1000000;
-static int array[1000000];
-static unsigned long arr[1000000];
+static char array[1000000];         //Switched from int to char array due to S I N G L E - B Y T E N E S S
+static int arr[1000000];
+int interval, numRuns, numTests;
 
 
-int main(int argc, char** argv){
 
-    struct timespec start, end;
-	unsigned long res = 0, maxval, temp;
-	int x, max = 0, y=0;
-	/*  Used as a way to change distance between each reference
-	    for different experiments. All tests done now have been in powers of 
-	    10 (1, 10, 100, etc.), but we may want to do a little math with the
-	    size of an int so we move in byte amounts that are a power of 2 */
-	int interval = 10000;
+int findMode(){
+	int maxval, temp;
+	int max = 0;
 
-    //Go through the loop and meaure the time it takes for variable x to be assigned a value
-    //from a position in an array. Sets the difference to a temp variable that is placed in arr[]
-    //which serves as an array of the time values taken on each reference and used for other 
-    //calculations such as mode.
-    printf("%lf\n", TIME_UTC);
-	for(int i = 0; i<arrLength; i += interval){
-        timespec_get(&start,TIME_UTC);
-		x = array[i];
-		timespec_get(&end,TIME_UTC);
-        temp = end.tv_nsec - start.tv_nsec;
-        printf("%lf\n", temp);
-		arr[i] = temp;
-		res += temp;
-		y++;
-	}
-	float avg = (float)res / y;
-	printf("Average: %f\n", avg);
-   
-    //Calculate the mode of the time values
-	for(int i=0;i<arrLength; i+=interval){
+	for(int i=0;i<numTests; ++i){
 		int count = 0;
 		// printf("%d\n", i);
 
-		for(int j = 0; j < arrLength; j+= interval){
+		for(int j = 0; j < numTests; ++j){
 			if(arr[j] == arr[i]){
 				++count;
 			}
@@ -60,9 +36,53 @@ int main(int argc, char** argv){
 			max = count;
 			maxval = arr[i];
 		}
-
 	}
+    return maxval;
+}
 
-	printf("Mode: %lu\n", maxval);
+
+
+
+
+int main(int argc, char** argv){
+
+    struct timespec start, end;
+	unsigned long res = 0;
+	int x, temp = 0, y;
+	//interval issed as a way to change distance between each reference for different experiments
+	interval = atoi(argv[1]);
+	numRuns = atoi(argv[2]);
+	numTests = atoi(argv[3]);
+
+    //To avoid segmentation faults :^)
+    if((interval * numRuns) > arrLength){
+    	printf("Error, given interval/run values will go beyond array bounds, highest index must be less then %f\n", arrLength);
+    	exit(0);
+    }
+
+
+    /*Runs the number of tests specified by user, where 
+      each test times a loop of user specified number of runs with a specified interval
+      between each index into the array */
+    for(int k = 0; k<numTests; ++k){
+	    y = 0;
+	    timespec_get(&start,TIME_UTC);
+		for(int i = 0; y<numRuns; i += interval){
+			x = array[i];
+			y++;
+		}
+	    timespec_get(&end,TIME_UTC);
+	    temp = end.tv_nsec - start.tv_nsec;
+	    //printf("%d\n", temp);
+	    arr[k] = temp;
+	    res += temp;
+    }
+
+
+	float avg = (float)res / y;
+    int mode = findMode();
+
+	printf("Average: %f\n", avg);
+    printf("Mode: %d\n", mode);
 
 }

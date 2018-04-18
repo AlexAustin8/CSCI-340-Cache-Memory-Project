@@ -10,3 +10,7 @@ Upon spending some time attempting to structure something that may end up meetin
 #Update 2: 
 Created Makefile. Modularity will be added when the program is running to specifications successfully
 Both makefile and modularity will be editted at later times.
+
+#Update 3: 
+Some modularity added w/ mode function, program now takes command line arguments to specify # tests, #runs per test and interval size, and timing is now done
+on the entire loop as opposed to the single data access. This loop itself is now placed in a loop that runs for the number of tests
