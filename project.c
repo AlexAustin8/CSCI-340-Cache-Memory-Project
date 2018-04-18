@@ -26,7 +26,7 @@ int main(){
 	    for different experiments. All tests done now have been in powers of 
 	    10 (1, 10, 100, etc.), but we may want to do a little math with the
 	    size of an int so we move in byte amounts that are a power of 2 */
-	int interval = 1;
+	int interval = 10000;
 
     //Go through the loop and meaure the time it takes for variable x to be assigned a value
     //from a position in an array. Sets the difference to a temp variable that is placed in arr[]
