@@ -17,3 +17,9 @@ on the entire loop as opposed to the single data access. This loop itself is now
 
 #Update 4: 
 Median Function added, as well after some empirical testing, results have been pretty consistent with all results being consistent per jump interval size until it reaches 32768 bytes (32k), which leads me to believe that the block sizes seem to be around 32k. Furthermore, cache accesses take an average of 3000-4000 ms and main memory accesses around 10500 ms, which is a >50% increase in access time. More accurate stats can be performed later 
+
+#Update 5:
+Added modularity with the timeAccesses function. Corrected and perfected time measuring standards and devices.
+Output status: Unoptimal
+Input status: Semioptimal
+Code status: better than expected
