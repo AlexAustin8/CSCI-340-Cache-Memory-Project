@@ -15,7 +15,6 @@
 static double arrLength = 100000000;
 static char array[100000000];         //Switched from int to char array due to S I N G L E - B Y T E N E S S
 static int arr[100000000];
-int interval, numRuns, numTests;
 
 
 
@@ -66,23 +65,29 @@ int interval, numRuns, numTests;
 
 int main(int argc, char** argv){
 	char k;
-	int arrLength = atoi(argv[1]);
-	int numRuns = atoi(argv[2]);
-	int numTests = atoi(argv[3]);
-	// char array[arrLength];
+	int numRuns = atoi(argv[1]);
+	int numTests = atoi(argv[2]);
+	double timeVals[numTests];
+	long double totalTime = 0;
    	struct timespec tstart, tend;
 
     for (int j = 0; j < numTests; j++) {
 	    clock_gettime(CLOCK_MONOTONIC, &tstart);
-	    for (int i = 1; i < numRuns; i++) {
+	    for (int i = 1; i <= numRuns; i++) {
 			k = array[i*j];
 	    }
 	    clock_gettime(CLOCK_MONOTONIC, &tend);
-	    printf("Running test %d, %d times took about %lf nanoseconds\n", j, numRuns, ((tend.tv_nsec - tstart.tv_nsec)/(double)numRuns));
+	    timeVals[j] = ((tend.tv_nsec - tstart.tv_nsec)/(double)numRuns);
+	    // printf("Running test %d, %d times took about %lf nanoseconds\n", j, numRuns, ((tend.tv_nsec - tstart.tv_nsec)/(double)numRuns));
 	    // break;
 	}
+    for (int j = 0; j < numTests; j++) {
+    	// printf("%lf\n", timeVals[j]);
+    	totalTime = totalTime + timeVals[j];
+    }
+    printf("%Lf nanoseconds\n", totalTime/numTests);
  //    struct timespec start, end;
-	// unsigned long res = 0;
+	// unsigned long res = 0;0.0002273834
 	// int x, temp = 0, y;
 	// //interval issed as a way to change distance between each reference for different experiments
 	// interval = atoi(argv[1]);
