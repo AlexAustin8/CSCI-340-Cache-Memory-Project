@@ -65,8 +65,8 @@ long double timeAccesses(double timeVals[]) {
 
     for (int j = 0; j < numTests; j++) {
 	    clock_gettime(CLOCK_MONOTONIC, &tstart);
-	    for (int i = 1; i <= numRuns; i++) {
-			k = array[i*j];
+	    for (int i = 0; i <= numRuns; i++) {
+			k = array[i + (numRuns * j)];
 	    }
 	    clock_gettime(CLOCK_MONOTONIC, &tend);
 	    timeVals[j] = ((tend.tv_nsec - tstart.tv_nsec)/(double)numRuns);

@@ -23,3 +23,6 @@ Added modularity with the timeAccesses function. Corrected and perfected time me
 Output status: Unoptimal
 Input status: Semioptimal
 Code status: better than expected
+
+#Update 6:
+Invalid math equation found in code. Issue: rectified.
