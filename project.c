@@ -102,6 +102,7 @@ long double cacheSizes(double sizeVals[]) {
 
 
 int main(int argc, char** argv){
+	jumpVal = atoi(argv[1]);
 	numRuns = atoi(argv[2]);
 	numTests = atoi(argv[3]);
 	double timeVals[numTests];
@@ -110,7 +111,7 @@ int main(int argc, char** argv){
 	long double totalSizes = cacheSizes(sizeVals);
 
     printf("%Lf nanoseconds\n", totalTime/numTests);
-    printf("%Lf nanoseconds\n", totalSizes/numTests);
+    // printf("%Lf nanoseconds\n", totalSizes/numTests);
     // for (int j = 0; j < numTests; j++) {
     // 	printf("%f\n", timeVals[j]);
     // }
@@ -179,19 +180,25 @@ int main(int argc, char** argv){
 
 
 	// // float avg = (float)res / y;
-    double mode = findMode(timeVals);
-    double median = findMedian(timeVals);
-	// // // printf("Average: %f\n", avg/numRuns);
-    printf("Mode: %lf\n", mode);
-    printf("Median: %lf\n", median);
+ //    double mode = findMode(timeVals);
+ //    double median = findMedian(timeVals);
+	// // // // printf("Average: %f\n", avg/numRuns);
+ //    printf("Mode: %lf\n", mode);
+ //    printf("Median: %lf\n", median);
+ //    for (int k = 0; k < numTests; k++) {
+ //    	if (timeVals[k] < (median)) {
+ //    		printf("%lf\n", timeVals[k]);
+ //    	}
+
+ //    }
 
 
-    // // float avg = (float)res / y;
-    mode = findMode(sizeVals);
-    median = findMedian(sizeVals);
-	// // // printf("Average: %f\n", avg/numRuns);
-    printf("Mode: %lf\n", mode);
-    printf("Median: %lf\n", median);
+ //    // // float avg = (float)res / y;
+ //    mode = findMode(sizeVals);
+ //    median = findMedian(sizeVals);
+	// // // // printf("Average: %f\n", avg/numRuns);
+ //    printf("Mode: %lf\n", mode);
+ //    printf("Median: %lf\n", median);
 
 
 }
