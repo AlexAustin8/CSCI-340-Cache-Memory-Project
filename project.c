@@ -98,7 +98,7 @@ int main(int argc, char** argv){
 		x = array[0];
 	    timespec_get(&end,TIME_UTC);
 	    temp = end.tv_nsec - start.tv_nsec;
-	    //printf("%d\n", temp);
+        printf("Test: %d: %d\n",k, temp);
 	    arr[k] = temp;
 	    res += temp;
     }
