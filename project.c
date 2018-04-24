@@ -91,9 +91,8 @@ int main(int argc, char** argv){
 
 
 	    timespec_get(&start,TIME_UTC);
-		for(int i = 0; y<numRuns; i += interval){
+		for(int i = 0; i<(numRuns*interval); i += interval){
 			x = array[i];
-			y++;
 		}
 		x = array[0];
 	    timespec_get(&end,TIME_UTC);
