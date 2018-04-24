@@ -21,8 +21,6 @@ double findMode(double values[]){
 
 	for(int i=0;i<numTests; ++i){
 		int count = 0;
-		// printf("%d\n", i);
-
 		for(int j = 0; j < numTests; ++j){
 			if(values[j] == values[i]){
 				++count;
@@ -58,7 +56,7 @@ double findMedian(double values[]){
 	}
 
 }
-long double timeAccesses(double timeVals[]) {
+long double timeAccesses(int numRuns, int numTests, double timeVals[]) {
 	char k;
 	long double totalTime = 0;
    	struct timespec tstart, tend;
@@ -70,7 +68,6 @@ long double timeAccesses(double timeVals[]) {
 	    }
 	    clock_gettime(CLOCK_MONOTONIC, &tend);
 	    timeVals[j] = ((tend.tv_nsec - tstart.tv_nsec)/(double)numRuns);
-	    printf("%lf\n", timeVals[j]);
 	}
     for (int j = 0; j < numTests; j++) {
     	totalTime = totalTime + timeVals[j];
@@ -78,20 +75,19 @@ long double timeAccesses(double timeVals[]) {
     return totalTime;
 }
 
-long double cacheSizes(double sizeVals[]) {
+long double cacheSizes(int interval, int numRuns, int numTests, double sizeVals[]) {
 	char k;
 	long double totalTime = 0;
    	struct timespec tstart, tend;
 
     for (int j = 0; j < numTests; j++) {
 	    clock_gettime(CLOCK_MONOTONIC, &tstart);
-	    for (int i = 0; i <= (numRuns*jumpVal); i+=jumpVal) {
-	    	// printf("%d\n", i);
+	    for (int i = 0; i <= (numRuns*interval); i+=interval) {
 			k = array[i];
 	    }
+	    k = array[0];
 	    clock_gettime(CLOCK_MONOTONIC, &tend);
 	    sizeVals[j] = ((tend.tv_nsec - tstart.tv_nsec)/(double)numRuns);
-	    // printf("%lf\n", sizeVals[j]);
 	}
     for (int j = 0; j < numTests; j++) {
     	totalTime = totalTime + sizeVals[j];
@@ -106,99 +102,34 @@ int main(int argc, char** argv){
 	numRuns = atoi(argv[2]);
 	numTests = atoi(argv[3]);
 	double timeVals[numTests];
-	long double totalTime = timeAccesses(timeVals);
+	long double totalTime = timeAccesses(numRuns, numTests, timeVals);
 	double sizeVals[numTests];
-	long double totalSizes = cacheSizes(sizeVals);
+	long double totalSizes = cacheSizes(jumpVal, numRuns, numTests, sizeVals);
 
     printf("%Lf nanoseconds\n", totalTime/numTests);
     // printf("%Lf nanoseconds\n", totalSizes/numTests);
-    // for (int j = 0; j < numTests; j++) {
-    // 	printf("%f\n", timeVals[j]);
-    // }
 
 
+	// float avg = (float)res / y;
+    double mode = findMode(timeVals);
+    double median = findMedian(timeVals);
+	// // // printf("Average: %f\n", avg/numRuns);
+    printf("Mode: %lf\n", mode);
+    printf("Median: %lf\n", median);
+    for (int k = 0; k < numTests; k++) {
+    	if (timeVals[k] < (median)) {
+    		printf("%lf\n", timeVals[k]);
+    	}
+
+    }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- // //    struct timespec start, end;
-	// // unsigned long res = 0;0.0002273834
-	// // int x, temp = 0, y;
-	// // //interval issed as a way to change distance between each reference for different experiments
-	// // interval = atoi(argv[1]);
-	// // numRuns = atoi(argv[2]);
-	// // numTests = atoi(argv[3]);
-
- // //    //To avoid segmentation faults :^)
- // //    if((interval * numRuns) > arrLength){
- // //    	printf("Error, given interval/run values will go beyond array bounds, highest index must be less then %f\n", arrLength);
- // //    	exit(0);
- // //    }
-
-
- // //    Runs the number of tests specified by user, where 
- // //      each test times a loop of user specified number of runs with a specified interval
- // //      between each index into the array 
- // //    for(k = 0; k<numTests; ++k){
-	// //     y = 0;
-	// //     timespec_get(&start,TIME_UTC);
-	// //     // printf("%d\n", start.tv_nsec);
-	// 	// for(int i = 0; y<numRuns; i += interval){
-	// 	// 	x = array[i];
-	// 	// 	y++;
-	// 	// }
-	// //     timespec_get(&end,TIME_UTC);
-	// //     // printf("%d\n", end.tv_nsec);
-	// //     temp = end.tv_nsec - start.tv_nsec;
-	// //     printf("%d\n", temp/numRuns);
-	// //     arr[k] = temp;
-	// //     res += temp;
- // //    }
-
-
-	// // float avg = (float)res / y;
- //    double mode = findMode(timeVals);
- //    double median = findMedian(timeVals);
-	// // // // printf("Average: %f\n", avg/numRuns);
- //    printf("Mode: %lf\n", mode);
- //    printf("Median: %lf\n", median);
- //    for (int k = 0; k < numTests; k++) {
- //    	if (timeVals[k] < (median)) {
- //    		printf("%lf\n", timeVals[k]);
- //    	}
-
- //    }
-
-
- //    // // float avg = (float)res / y;
- //    mode = findMode(sizeVals);
- //    median = findMedian(sizeVals);
-	// // // // printf("Average: %f\n", avg/numRuns);
- //    printf("Mode: %lf\n", mode);
- //    printf("Median: %lf\n", median);
+    // // float avg = (float)res / y;
+    mode = findMode(sizeVals);
+    median = findMedian(sizeVals);
+	// // // printf("Average: %f\n", avg/numRuns);
+    printf("Mode: %lf\n", mode);
+    printf("Median: %lf\n", median);
 
 
 }
