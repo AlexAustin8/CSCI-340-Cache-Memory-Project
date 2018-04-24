@@ -12,10 +12,10 @@
 
 //Switched from int to char array due to S I N G L E - B Y T E N E S S
 static char array[100000000];    
-int numTests, numRuns;
+int jumpVal, numTests, numRuns;
 
 
-double findMode(double timeVals[]){
+double findMode(double values[]){
 	double maxval, temp;
 	int max = 0;
 
@@ -24,13 +24,13 @@ double findMode(double timeVals[]){
 		// printf("%d\n", i);
 
 		for(int j = 0; j < numTests; ++j){
-			if(timeVals[j] == timeVals[i]){
+			if(values[j] == values[i]){
 				++count;
 			}
 		}
 		if(count > max){
 			max = count;
-			maxval = timeVals[i];
+			maxval = values[i];
 		}
 	}
     return maxval;
@@ -46,15 +46,15 @@ int comparator(const void* x, const void* y){
 
 //Find Median value of results by sorting list returns the mean of 2 middle elements
 //if there is an even number of elements, else returns middle element
-double findMedian(double timeVals[]){
-	qsort((void*)timeVals, numTests, sizeof(timeVals[0]), comparator);
+double findMedian(double values[]){
+	qsort((void*)values, numTests, sizeof(values[0]), comparator);
 
    
 	if(numTests%2 == 0){
-		return((timeVals[numTests/2] + timeVals[numTests/2 -1]) / 2.0);
+		return((values[numTests/2] + values[numTests/2 -1]) / 2.0);
 	}
 	else{
-		return timeVals[numTests/2];
+		return values[numTests/2];
 	}
 
 }
@@ -66,7 +66,7 @@ long double timeAccesses(double timeVals[]) {
     for (int j = 0; j < numTests; j++) {
 	    clock_gettime(CLOCK_MONOTONIC, &tstart);
 	    for (int i = 0; i <= numRuns; i++) {
-			k = array[i + (numRuns * j)];
+			k = array[(i + (numRuns * j))];
 	    }
 	    clock_gettime(CLOCK_MONOTONIC, &tend);
 	    timeVals[j] = ((tend.tv_nsec - tstart.tv_nsec)/(double)numRuns);
@@ -78,15 +78,39 @@ long double timeAccesses(double timeVals[]) {
     return totalTime;
 }
 
+long double cacheSizes(double sizeVals[]) {
+	char k;
+	long double totalTime = 0;
+   	struct timespec tstart, tend;
+
+    for (int j = 0; j < numTests; j++) {
+	    clock_gettime(CLOCK_MONOTONIC, &tstart);
+	    for (int i = 0; i <= (numRuns*jumpVal); i+=jumpVal) {
+	    	// printf("%d\n", i);
+			k = array[i];
+	    }
+	    clock_gettime(CLOCK_MONOTONIC, &tend);
+	    sizeVals[j] = ((tend.tv_nsec - tstart.tv_nsec)/(double)numRuns);
+	    // printf("%lf\n", sizeVals[j]);
+	}
+    for (int j = 0; j < numTests; j++) {
+    	totalTime = totalTime + sizeVals[j];
+    }
+    return totalTime;
+}
+
 
 
 int main(int argc, char** argv){
-	numRuns = atoi(argv[1]);
-	numTests = atoi(argv[2]);
+	numRuns = atoi(argv[2]);
+	numTests = atoi(argv[3]);
 	double timeVals[numTests];
 	long double totalTime = timeAccesses(timeVals);
+	double sizeVals[numTests];
+	long double totalSizes = cacheSizes(sizeVals);
 
     printf("%Lf nanoseconds\n", totalTime/numTests);
+    printf("%Lf nanoseconds\n", totalSizes/numTests);
     // for (int j = 0; j < numTests; j++) {
     // 	printf("%f\n", timeVals[j]);
     // }
@@ -156,9 +180,15 @@ int main(int argc, char** argv){
 
 	// // float avg = (float)res / y;
     double mode = findMode(timeVals);
-
     double median = findMedian(timeVals);
+	// // // printf("Average: %f\n", avg/numRuns);
+    printf("Mode: %lf\n", mode);
+    printf("Median: %lf\n", median);
 
+
+    // // float avg = (float)res / y;
+    mode = findMode(sizeVals);
+    median = findMedian(sizeVals);
 	// // // printf("Average: %f\n", avg/numRuns);
     printf("Mode: %lf\n", mode);
     printf("Median: %lf\n", median);
