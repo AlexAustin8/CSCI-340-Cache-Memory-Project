@@ -77,21 +77,6 @@ void cacheSizes(int interval, int numRuns, int numTests, double sizeVals[]) {
 		for (int i = 0; i <= (numRuns*interval); i+=interval) {
 			k = array[i];
 		}
-		k = array[0];
-		clock_gettime(CLOCK_MONOTONIC, &tend);
-		sizeVals[j] = ((tend.tv_nsec - tstart.tv_nsec)/(double)numRuns);
-	}
-}
-
-void cacheBlockSizes(int interval, int numRuns, int numTests, double sizeVals[]) {
-	char k;
-	struct timespec tstart, tend;
-
-	for (int j = 0; j < numTests; j++) {
-		clock_gettime(CLOCK_MONOTONIC, &tstart);
-		for (int i = 0; i <= (numRuns*interval); i+=interval) {
-			k = array[i];
-		}
 		clock_gettime(CLOCK_MONOTONIC, &tend);
 		sizeVals[j] = (tend.tv_nsec - tstart.tv_nsec);
 	}
@@ -133,7 +118,6 @@ void getTime() {
 			highLevelCount++;
 		}
 	}
-
 	printf("The average access time for the lower level caches is: %lf nanoseconds.\n", lowLevelTotal/lowLevelCount);
 	printf("The average access time for the higher level caches is: %lf nanoseconds.\n", highLevelTotal/highLevelCount);
 
@@ -154,53 +138,47 @@ void getTime() {
 			mainMemoryCount++;
 		}
 	}
-
 	printf("The average access time for the main memory is: %lf nanoseconds.\n", mainMemoryTotal/mainMemoryCount);
 
 }
 
 void getSize() {
+	double sizeVals[5];
+	double median, lastMedian;
+	double mode, lastMode;
+	int interval;
+
 	double intervals[100];
-	double median = 0, lastMedian = 0;
 	for(int o = 0; o < 100; o++){
-		double sizeVals[5];
 		median = 0, lastMedian = 0;
-		int jumpInterval = 1;
-		while(jumpInterval < 32000){
-			cacheBlockSizes(jumpInterval, 1024, 5, sizeVals);
+		interval = 1;
+		
+		while(interval < 32768){
+			cacheSizes(interval, 1024, 5, sizeVals);
 			median = findMedian(5, sizeVals);
 			if(median/lastMedian > 2 && lastMedian != 0){
 				break;
 			}
-			jumpInterval = jumpInterval * 2;
+			interval = interval * 2;
 			lastMedian = median;	 
 		}
-		intervals[o] = jumpInterval;
-	}
-	double mode = findMode(100, intervals);
-
-	printf("Your approximate total cache size is: %0.0f Kilo-bytes.\n", mode);	
-
-	for(int o = 0; o < 100; o++){
-		double sizeVals[5];
-		double peeVals[50];
-		median = 0, lastMedian = 0;
-		int jumpInterval = 1;
-		while(jumpInterval < 256){
-			cacheBlockSizes(jumpInterval, 500000, 5, sizeVals);
-			median = findMode(5, sizeVals);
-			printf("%lf\n", median);
-			if(median/lastMedian > 1.5 && lastMedian != 0){
-				break;
-			}
-			jumpInterval = jumpInterval * 2;
-			lastMedian = median;	 
-		}
-		printf("%d\n", jumpInterval);
-		intervals[o] = jumpInterval;
+		intervals[o] = interval;
 	}
 	mode = findMode(100, intervals);
-	printf("Your approximate total cache block size is: %0.0f bytes.\n", mode);
+	printf("The approximate total cache size is between: %0.0f - %0.0f Kilo-bytes.\n", (mode/2), mode);	
+
+	mode = 0, lastMode = 0;
+	interval = 1;
+	while(interval < 2048){
+		cacheSizes(interval, 100000, 5, sizeVals);
+		mode = findMode(5, sizeVals);
+		if(mode/lastMode > 1.5 && lastMode != 0){
+			break;
+		}
+		interval *= 2;
+		lastMode = mode;	 
+	}
+	printf("The approximate cache block size of level one cache is: %d bytes.\n", interval);
 }
 
 
