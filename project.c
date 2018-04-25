@@ -70,9 +70,8 @@ void timeAccesses(int numRuns, int numTests, double timeVals[]) {
 	}
 }
 
-long double cacheSizes(int interval, int numRuns, int numTests, double sizeVals[]) {
+void cacheSizes(int interval, int numRuns, int numTests, double sizeVals[]) {
 	char k;
-	long double totalTime = 0;
 	struct timespec tstart, tend;
 
 	for (int j = 0; j < numTests; j++) {
@@ -87,8 +86,10 @@ long double cacheSizes(int interval, int numRuns, int numTests, double sizeVals[
 }
 
 void getTime() {
-	double sumAvgs = 0;
-	int sumTotal = 0;
+	double highAvg = 0;
+	int highTotal = 0;
+	double lowAvg = 0;
+	int lowTotal = 0;	
 	for (int i = 0; i < 100; i++) {
 		double timeVals[10000];
 		timeAccesses(100, 10000, timeVals);
@@ -98,23 +99,34 @@ void getTime() {
 		// printf("Mode: %lf\n", mode);
 		// printf("Median: %lf\n", median);
 		double average = 0;
+		double lowaverage = 0;
 		int averageVals = 0;
+		int lowaverageVals = 0;
 		for (int k = 0; k < 10000; k++) {
-			if (timeVals[k] > 13 && timeVals[k] < 35) {
+			if (timeVals[k] > 10 && timeVals[k] < 35) {
 				// printf("%lf\n", timeVals[k]);
 				average += timeVals[k];
 				averageVals++;
 			}
+			else if (timeVals[k] < 10) {
+				lowaverage += timeVals[k];
+				lowaverageVals++;
+			}
 		}
 		// printf("%lf\n", (average/averageVals));
 		if (average/averageVals > 0) {
-			sumAvgs += (average/averageVals);
-			sumTotal++;
+			highAvg += (average/averageVals);
+			highTotal++;
+		}
+		if (lowaverage/lowaverageVals > 0) {
+			lowAvg += (lowaverage/lowaverageVals);
+			lowTotal++;
 		}
 	}
-	printf("%lf\n", sumAvgs/sumTotal);
-	sumAvgs = 0;
-	sumTotal = 0;
+	printf("%lf\n", lowAvg/lowTotal);
+	printf("%lf\n", highAvg/highTotal);
+	double sumAvgs = 0;
+	double sumTotal = 0;
 	for (int i = 0; i < 100; i++) {
 		double timeVals[10000];
 		timeAccesses(1, 10000, timeVals);
@@ -144,27 +156,27 @@ void getTime() {
 
 
 int main(int argc, char** argv){
-	// getTime();
+	getTime();
 	int jumpVal = atoi(argv[1]);
 	int numRuns = atoi(argv[2]);
 	int numTests = atoi(argv[3]);
 	// double timeVals[numTests];
 	// long double totalTime = timeAccesses(numRuns, numTests, timeVals);
 	double sizeVals[numTests];
-	long double totalSizes = cacheSizes(jumpVal, numRuns, numTests, sizeVals);
 
  //    printf("%Lf nanoseconds\n", totalTime/numTests);
-	printf("%Lf nanoseconds\n", totalSizes/numTests);
+	// printf("%Lf nanoseconds\n", totalSizes/numTests);
 	int intervals[100];
 	double median = 0, lastMedian = 0;
 	for(int o = 0; o < 100; o++){
 		median = 0, lastMedian = 0;
 		int jumpInterval = 1;
 		while(jumpInterval < 32000){
-			long double totalSizes = cacheSizes(jumpInterval, 1024, 5, sizeVals);
+			cacheSizes(jumpInterval, 1024, 5, sizeVals);
 			median = findMedian(5, sizeVals);
-			//printf("MID:%lf\n", (median));
-			if(median/lastMedian >= 2 && lastMedian != 0){
+			// printf("MID:%lf\n", (median));
+			// printf("%lf\n", median/lastMedian);
+			if(median/lastMedian > 2 && lastMedian != 0){
 				break;
 			}
 			jumpInterval = jumpInterval *2;
