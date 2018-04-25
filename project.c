@@ -11,17 +11,16 @@
  */
 
 //Switched from int to char array due to S I N G L E - B Y T E N E S S
-static char array[100000000];    
-// int jumpVal, numTests, numRuns;
+static char array[100000000];
 
 
-double findMode(int numTests, double values[]){
+double findMode(int arraySize, double values[]){
 	double maxval, temp;
 	int max = 0;
 
-	for(int i=0;i<numTests; ++i){
+	for(int i=0;i<arraySize; ++i){
 		int count = 0;
-		for(int j = 0; j < numTests; ++j){
+		for(int j = 0; j < arraySize; ++j){
 			if(values[j] == values[i]){
 				++count;
 			}
@@ -40,22 +39,21 @@ int comparator(const void* x, const void* y){
 	return ( *(int*)x - *(int*)y);
 }
 
-
-
 //Find Median value of results by sorting list returns the mean of 2 middle elements
 //if there is an even number of elements, else returns middle element
-double findMedian(int numTests, double values[]){
-	qsort((void*)values, numTests, sizeof(values[0]), comparator);
+double findMedian(int arraySize, double values[]){
+	qsort((void*)values, arraySize, sizeof(values[0]), comparator);
 
    
-	if(numTests%2 == 0){
-		return((values[numTests/2] + values[numTests/2 -1]) / 2.0);
+	if(arraySize%2 == 0){
+		return((values[arraySize/2] + values[arraySize/2 -1]) / 2.0);
 	}
 	else{
-		return values[numTests/2];
+		return values[arraySize/2];
 	}
 
 }
+
 void timeAccesses(int numRuns, int numTests, double timeVals[]) {
 	char k;
 	struct timespec tstart, tend;
@@ -86,87 +84,70 @@ void cacheSizes(int interval, int numRuns, int numTests, double sizeVals[]) {
 }
 
 void getTime() {
-	double highAvg = 0;
-	int highTotal = 0;
-	double lowAvg = 0;
-	int lowTotal = 0;	
+	double timeVals[10000];
+	double lowLevelTotal = 0;
+	int lowLevelCount = 0;
+	double highLevelTotal = 0;
+	int highLevelCount = 0;	
+	double mainMemoryTotal = 0;
+	int mainMemoryCount = 0;
+	
 	for (int i = 0; i < 100; i++) {
-		double timeVals[10000];
 		timeAccesses(100, 10000, timeVals);
-		double mode = findMode(10000, timeVals);
-		double median = findMedian(10000, timeVals);
-		// // // printf("Average: %f\n", avg/numRuns);
-		// printf("Mode: %lf\n", mode);
-		// printf("Median: %lf\n", median);
-		double average = 0;
-		double lowaverage = 0;
-		int averageVals = 0;
-		int lowaverageVals = 0;
+
+ 		double lowTotal = 0;
+		int lowCount = 0;	
+		double highTotal = 0;	
+		int highCount = 0;
+
 		for (int k = 0; k < 10000; k++) {
-			if (timeVals[k] > 10 && timeVals[k] < 35) {
-				// printf("%lf\n", timeVals[k]);
-				average += timeVals[k];
-				averageVals++;
-			}
-			else if (timeVals[k] < 10) {
-				lowaverage += timeVals[k];
-				lowaverageVals++;
+			if (timeVals[k] < 10) {
+				lowTotal += timeVals[k];
+				lowCount++;
+			}			
+			else if (timeVals[k] > 10 && timeVals[k] < 35) {
+				highTotal += timeVals[k];
+				highCount++;
 			}
 		}
-		// printf("%lf\n", (average/averageVals));
-		if (average/averageVals > 0) {
-			highAvg += (average/averageVals);
-			highTotal++;
+		if (lowTotal/lowCount > 0) {
+			lowLevelTotal += (lowTotal/lowCount);
+			lowLevelCount++;
 		}
-		if (lowaverage/lowaverageVals > 0) {
-			lowAvg += (lowaverage/lowaverageVals);
-			lowTotal++;
+		if (highTotal/highCount > 0) {
+			highLevelTotal += (highTotal/highCount);
+			highLevelCount++;
 		}
 	}
-	printf("%lf\n", lowAvg/lowTotal);
-	printf("%lf\n", highAvg/highTotal);
-	double sumAvgs = 0;
-	double sumTotal = 0;
+
+	printf("The average access time for the lower level caches is: %lf nanoseconds.\n", lowLevelTotal/lowLevelCount);
+	printf("The average access time for the higher level caches is: %lf nanoseconds.\n", highLevelTotal/highLevelCount);
+
 	for (int i = 0; i < 100; i++) {
-		double timeVals[10000];
 		timeAccesses(1, 10000, timeVals);
-		double mode = findMode(10000, timeVals);
-		double median = findMedian(10000, timeVals);
-		// // // printf("Average: %f\n", avg/numRuns);
-		// printf("Mode: %lf\n", mode);
-		// printf("Median: %lf\n", median);
-		double average = 0;
-		int averageVals = 0;
+
+		double memoryTotal = 0;
+		int memoryCount = 0;
+
 		for (int k = 0; k < 10000; k++) {
-			if (timeVals[k] > 50 && timeVals[k] < 200) {
-				// printf("%lf\n", timeVals[k]);
-				average += timeVals[k];
-				averageVals++;
+			if (timeVals[k] > 100 && timeVals[k] < 150) {
+				memoryTotal += timeVals[k];
+				memoryCount++;
 			}
 		}
-		// printf("%lf\n", (average/averageVals));
-		if (average/averageVals > 0) {
-			sumAvgs += (average/averageVals);
-			sumTotal++;
+		if (memoryTotal/memoryCount > 0) {
+			mainMemoryTotal += (memoryTotal/memoryCount);
+			mainMemoryCount++;
 		}
 	}
-	printf("%lf\n", sumAvgs/sumTotal);
+
+	printf("The average access time for the main memory is: %lf nanoseconds.\n", mainMemoryTotal/mainMemoryCount);
 
 }
 
-
-int main(int argc, char** argv){
-	getTime();
-	int jumpVal = atoi(argv[1]);
-	int numRuns = atoi(argv[2]);
-	int numTests = atoi(argv[3]);
-	// double timeVals[numTests];
-	// long double totalTime = timeAccesses(numRuns, numTests, timeVals);
-	double sizeVals[numTests];
-
- //    printf("%Lf nanoseconds\n", totalTime/numTests);
-	// printf("%Lf nanoseconds\n", totalSizes/numTests);
-	int intervals[100];
+void getSize() {
+	double sizeVals[5];
+	double intervals[100];
 	double median = 0, lastMedian = 0;
 	for(int o = 0; o < 100; o++){
 		median = 0, lastMedian = 0;
@@ -174,8 +155,6 @@ int main(int argc, char** argv){
 		while(jumpInterval < 32000){
 			cacheSizes(jumpInterval, 1024, 5, sizeVals);
 			median = findMedian(5, sizeVals);
-			// printf("MID:%lf\n", (median));
-			// printf("%lf\n", median/lastMedian);
 			if(median/lastMedian > 2 && lastMedian != 0){
 				break;
 			}
@@ -184,60 +163,13 @@ int main(int argc, char** argv){
 		}
 		intervals[o] = jumpInterval;
 	}
-
-	for(int u = 0; u < 100; u++){
-		printf("Interval: %d\n", intervals[u]);
-	}
-
-
-	// printf("%Lf nanoseconds\n", totalTime/numTests);
-	// printf("%Lf nanoseconds\n", totalSizes/numTests);
-
-
- //    // float avg = (float)res / y;
-	// double mode = findMode(timeVals);
-	// median = findMedian(timeVals);
- //    // // // printf("Average: %f\n", avg/numRuns);
-	// printf("Mode: %lf\n", mode);
-	// printf("Median: %lf\n", median);
-	// for (int k = 0; k < numTests; k++) {
- //   	 if (timeVals[k] < (median)) {
- //   		 printf("%lf\n", timeVals[k]);
- //   	 }
-
-	// }
-
-
-	// // // float avg = (float)res / y;
-	// mode = findMode(sizeVals);
-	// median = findMedian(sizeVals);
- //    // // // printf("Average: %f\n", avg/numRuns);
-	// printf("Mode: %lf\n", mode);
-	// printf("Median: %lf\n", median);
+	double mode = findMode(100, intervals);
+	printf("Your approximate total cache size is: %0.0f M.\n", mode);	
+}
 
 
 
-
-	// // float avg = (float)res / y;
- //    double mode = findMode(timeVals);
- //    double median = findMedian(timeVals);
-	// // // // printf("Average: %f\n", avg/numRuns);
- //    printf("Mode: %lf\n", mode);
- //    printf("Median: %lf\n", median);
- //    for (int k = 0; k < numTests; k++) {
- //    	if (timeVals[k] < (median)) {
- //    		printf("%lf\n", timeVals[k]);
- //    	}
-
- //    }
-
-
- //    // // float avg = (float)res / y;
-	double mode = findMode(numTests, sizeVals);
-	median = findMedian(numTests, sizeVals);
-	// // // printf("Average: %f\n", avg/numRuns);
-	printf("Mode: %lf\n", mode);
-	printf("Median: %lf\n", median);
-
-
+int main(int argc, char** argv){
+	getTime();
+	getSize();
 }
