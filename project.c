@@ -83,6 +83,21 @@ void cacheSizes(int interval, int numRuns, int numTests, double sizeVals[]) {
 	}
 }
 
+void cacheBlockSizes(int interval, int numRuns, int numTests, double sizeVals[]) {
+	char k;
+	struct timespec tstart, tend;
+
+	for (int j = 0; j < numTests; j++) {
+		clock_gettime(CLOCK_MONOTONIC, &tstart);
+		for (int i = 0; i <= (numRuns*interval); i+=interval) {
+			k = array[i];
+		}
+		// k = array[0];
+		clock_gettime(CLOCK_MONOTONIC, &tend);
+		sizeVals[j] = ((tend.tv_nsec - tstart.tv_nsec));
+	}
+}
+
 void getTime() {
 	double timeVals[10000];
 	double lowLevelTotal = 0;
@@ -146,25 +161,45 @@ void getTime() {
 }
 
 void getSize() {
-	double sizeVals[5];
 	double intervals[100];
 	double median = 0, lastMedian = 0;
 	for(int o = 0; o < 100; o++){
+		double sizeVals[5];
 		median = 0, lastMedian = 0;
 		int jumpInterval = 1;
 		while(jumpInterval < 32000){
-			cacheSizes(jumpInterval, 1024, 5, sizeVals);
+			cacheBlockSizes(jumpInterval, 1024, 5, sizeVals);
 			median = findMedian(5, sizeVals);
 			if(median/lastMedian > 2 && lastMedian != 0){
 				break;
 			}
-			jumpInterval = jumpInterval *2;
+			jumpInterval = jumpInterval * 2;
 			lastMedian = median;	 
 		}
 		intervals[o] = jumpInterval;
 	}
 	double mode = findMode(100, intervals);
+
 	printf("Your approximate total cache size is: %0.0f Kilo-bytes.\n", mode);	
+
+	for(int o = 0; o < 1; o++){
+		double sizeVals[50];
+		median = 0, lastMedian = 0;
+		int jumpInterval = 1;
+		while(jumpInterval < 32000){
+			cacheBlockSizes(jumpInterval, 100000, 50, sizeVals);
+			median = findMode(50, sizeVals);
+			printf("%lf\n", median);
+			if(median/lastMedian > 2 && lastMedian != 0){
+				break;
+			}
+			jumpInterval = jumpInterval * 2;
+			lastMedian = median;	 
+		}
+		intervals[o] = jumpInterval;
+	}
+	mode = findMode(1, intervals);
+	printf("Your approximate total cache block size is: %0.0f bytes.\n", mode);
 }
 
 
