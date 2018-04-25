@@ -77,6 +77,7 @@ void cacheSizes(int interval, int numRuns, int numTests, double sizeVals[]) {
 		for (int i = 0; i <= (numRuns*interval); i+=interval) {
 			k = array[i];
 		}
+		k = array[0];
 		clock_gettime(CLOCK_MONOTONIC, &tend);
 		sizeVals[j] = (tend.tv_nsec - tstart.tv_nsec);
 	}
