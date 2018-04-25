@@ -26,3 +26,7 @@ Code status: better than expected
 
 #Update 6:
 Invalid math equation found in code. Issue: rectified.
+
+#Update 7:
+Fixed problems and produced solutions.
+Accuracy: predicted to be mostly accurate.
