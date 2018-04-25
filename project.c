@@ -164,7 +164,7 @@ void getSize() {
 		intervals[o] = jumpInterval;
 	}
 	double mode = findMode(100, intervals);
-	printf("Your approximate total cache size is: %0.0f M.\n", mode);	
+	printf("Your approximate total cache size is: %0.0f Kilo-bytes.\n", mode);	
 }
 
 
